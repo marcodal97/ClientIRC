@@ -1,16 +1,22 @@
-#define MAX_BUF 8192
+#define MAX_BUF 512
 #define MSGKEY 6666
 
 void *threadFW(void *arg);
 void *threadFR(void *arg);
 
-typedef struct{
-char msg[MAX_BUF];
-}tipo_dato;
+void *threadVW(void *arg);
+void *threadVR(void *arg);
+
+
+
 
 typedef struct{
 long int m_type; //1 visual, 2 executer, 3 client
-tipo_dato mess;
+char msg[MAX_BUF];
+int porta;
+char nick[20];
+char user[20];
+char server[20];
 }tipo_coda;
 
 
