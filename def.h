@@ -1,5 +1,5 @@
 #define MAX_BUF 8192
-
+#define MSGKEY 6666
 
 void *threadFW(void *arg);
 void *threadFR(void *arg);
@@ -14,5 +14,4 @@ tipo_dato mess;
 }tipo_coda;
 
 
-#define MSGKEY 6666
 
