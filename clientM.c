@@ -12,7 +12,7 @@
 #include <sys/msg.h>
 #include "def.h"
 
-#define MSGKEY 6666
+
 
 
 
@@ -28,6 +28,7 @@ printf("Errore msgget\n");
 exit(1);
 }
      
+tipo_coda coda;
 
 
 struct sockaddr_in server;
@@ -51,7 +52,6 @@ perror("Errore connect\n");
 exit(1);
 }
 
-printf("Connessione al Server riuscita\n\n");
 
 pthread_create(&threadW, NULL, threadFW, (void*)&sock);
 pthread_create(&threadR, NULL, threadFR, (void*)&sock);
@@ -70,7 +70,7 @@ tipo_coda coda;
 
 	while(1){
 	
-	printf("TW\n");
+	
 		memset(coda.mess.msg, '\0', MAX_BUF);
 
 		if(msgrcv(msg_id, &coda, sizeof(tipo_dato), 3, 0) < 0){
@@ -79,13 +79,14 @@ tipo_coda coda;
 		exit(1);
 		}
 		
-		
+		printf("Ric da vis\n");
 
 		if(send(sockid, coda.mess.msg, strlen(coda.mess.msg), 0)<0){
 		perror("Errore send\n");
 		msgctl(msg_id, IPC_RMID, 0);
 		exit(1);		
 		}
+		printf("Inv a serv %s\n", coda.mess.msg);
 		
 		if(strcmp(coda.mess.msg, "QUIT") == 0){
 		printf("Chiudo connessione\n");
@@ -105,7 +106,7 @@ tipo_coda coda;
 
 	while(1){
 	
-	printf("TR\n");
+	
 	memset(coda.mess.msg, '\0', MAX_BUF);
 	
 	if(recv(sockid, &coda.mess.msg, MAX_BUF, 0) < 0){
@@ -113,8 +114,11 @@ tipo_coda coda;
 	msgctl(msg_id, IPC_RMID, 0);
 	exit(1);	
 	}
-	coda.type = 1; //invio a visualizzatore il messaggio letto dal server
+	
+	printf("Ric da ser \n");
+	coda.m_type = 1; //invio a visualizzatore il messaggio letto dal server
 	msgsnd(msg_id, &coda, sizeof(tipo_dato), 0);	
+	printf("Inv a vis\n");
 
 
 	}
