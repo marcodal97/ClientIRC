@@ -1,5 +1,6 @@
 #define MAX_BUF 8192
-#define MSGKEY 6666
+#define MSG_KEY 6666
+const char* KEYWORD="EXEC: ";
 
 void *threadFW(void *arg);
 void *threadFR(void *arg);
