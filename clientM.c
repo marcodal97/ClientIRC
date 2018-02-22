@@ -5,7 +5,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <sys/types.h>
-#include <sys/types.h>
+#include <sys/wait.h>
 #include <string.h>
 #include <netdb.h>
 #include <sys/ipc.h>
@@ -66,14 +66,14 @@ close(sock);
 void *threadFW(void *arg){
 
 int sockid = *(int*)arg;
-tipo_coda dato;
+tipo_coda coda;
 
 	while(1){
 	
-	
-		memset(dato.mess.msg, '\0', MAX_BUF);
+	printf("TW\n");
+		memset(coda.mess.msg, '\0', MAX_BUF);
 
-		if(msgrcv(msg_id, &dato, sizeof(tipo_dato), 3, 0) < 0){
+		if(msgrcv(msg_id, &coda, sizeof(tipo_dato), 3, 0) < 0){
 		perror("Errore msgrcv\n");
 		msgctl(msg_id, IPC_RMID, 0);
 		exit(1);
@@ -81,13 +81,13 @@ tipo_coda dato;
 		
 		
 
-		if(send(sockid, dato.mess.msg, strlen(dato.mess.msg), 0)<0){
+		if(send(sockid, coda.mess.msg, strlen(coda.mess.msg), 0)<0){
 		perror("Errore send\n");
 		msgctl(msg_id, IPC_RMID, 0);
 		exit(1);		
 		}
 		
-		if(strcmp(dato.mess.msg, "QUIT") == 0){
+		if(strcmp(coda.mess.msg, "QUIT") == 0){
 		printf("Chiudo connessione\n");
 		msgctl(msg_id, IPC_RMID, 0);
 		exit(0);
@@ -100,20 +100,21 @@ tipo_coda dato;
 void *threadFR(void* arg){
 
 int sockid = *(int*)arg;
-tipo_coda dato;
+tipo_coda coda;
 
 
 	while(1){
 	
-	memset(dato.mess.msg, '\0', MAX_BUF);
+	printf("TR\n");
+	memset(coda.mess.msg, '\0', MAX_BUF);
 	
-	if(recv(sockid, &dato.mess.msg, MAX_BUF, 0) < 0){
+	if(recv(sockid, &coda.mess.msg, MAX_BUF, 0) < 0){
 	printf("Errore recv\n");
 	msgctl(msg_id, IPC_RMID, 0);
 	exit(1);	
 	}
-	dato.type = 2; //invio a visualizzatore il messaggio letto dal server
-	msgsnd(msg_id, &dato, sizeof(tipo_dato), 0);	
+	coda.type = 1; //invio a visualizzatore il messaggio letto dal server
+	msgsnd(msg_id, &coda, sizeof(tipo_dato), 0);	
 
 
 	}
