@@ -60,6 +60,7 @@ return ris;
 
 
 
+
 void JOIN(char *comando){  //Crea comando per entrare in una stanza
 
 char stanza[MAX_BUX];
