@@ -8,6 +8,22 @@
 #include "def.h"
 
 #define MAX_TEXT_COMMAND 1024
+const char* CHIOCCIOLA="@";
+
+void trova_user(char *command, char *user_comandante){
+	char *inizio, *fine;
+	
+	
+	if((inizio=strstr(command, ":"))){
+		inizio+=strlen(":");
+		if((fine=strstr(inizio, "!"))){
+			memcpy(user_comandante, inizio, fine-inizio);
+		}
+	}
+	
+
+
+}
 
 int main(void){
 	int msg_id;
@@ -16,6 +32,8 @@ int main(void){
 	FILE *fp;
 	char output[MAX_BUF];
 	tipo_coda msg_r;
+	char user_comandante[MAX_BUF];
+	
 	
 	
 	msg_id=msgget(MSG_KEY, 0666 | IPC_CREAT);
@@ -30,10 +48,11 @@ int main(void){
 	}
 	strcpy(command, msg_r.mess.msg);
 	memset(msg_r.mess.msg, '\0', MAX_BUF);
-		
-	if((com=strstr(command, KEYWORD))!=NULL){
-			com=strtok(com, KEYWORD);
+	
+	if(com=strstr(command, KEYWORD)){
 			
+			com=strtok(com, KEYWORD);						
+			trova_user(command, user_comandante);			
 			
 			fp=popen(com, "r");
 			if(fp==NULL){
@@ -41,9 +60,9 @@ int main(void){
 				exit(EXIT_FAILURE);
 			}
 		
-		
+			
 			fread(output, MAX_BUF, 1, fp);
-		
+			printf("%s", output);
 			strcpy(msg_r.mess.msg, output);
 			msg_r.m_type=1;
 			if(msgsnd(msg_id, (void *)&msg_r, sizeof(msg_r)-sizeof(long int), 0)==-1){
