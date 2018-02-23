@@ -31,3 +31,8 @@ void creaNICK(char *nick, char *comando);
 void creaUSER(char *nome, char *comando);
 
 int PONG(int sock);
+
+void WHOIS(char *comando);
+void MSG(char *comando, char *msg, char *nome);
+void JOIN(char *comando);
+void PART(char *comando);
