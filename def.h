@@ -1,5 +1,5 @@
 
-#define MAX_BUF 8192
+#define MAX_BUF 512
 #define MSG_KEY 6666
 
 const char* KEYWORD="EXEC: ";
@@ -18,10 +18,11 @@ typedef struct{
 long int m_type; //1 visual, 2 executer, 3 client
 char msg[MAX_BUF];
 int porta;
-char nick[20];
-char user[20];
-char server[20];
+char nick[MAX_BUF];
+char user[MAX_BUF];
+char server[50];
 }tipo_coda;
 
 
-
+void login(int msg_id);
+void loginserv(int sockid, int msg_id);
