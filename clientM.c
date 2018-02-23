@@ -41,6 +41,7 @@ int main(){
 
 //aspetto dati da visual
 
+
 	printf("Aspetto dati da visual\n");
 
 	if(msgrcv(msg_id, &coda, sizeof(tipo_coda)-sizeof(long int), 3, 0)<0){
