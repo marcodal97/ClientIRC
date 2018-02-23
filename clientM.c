@@ -23,7 +23,7 @@ int main(){
 	msgctl(msg_id, IPC_RMID, 0);
 
 
-	msg_id = msgget((key_t)MSGKEY, 0666 | IPC_CREAT);
+	msg_id = msgget((key_t)MSG_KEY, 0666 | IPC_CREAT);
 		if(msg_id < 0){
 			printf("Errore msgget\n");
 			exit(1);
@@ -105,7 +105,7 @@ int main(){
 
 
 
-
+loginserv(sock, msg_id);
 
 
 pthread_create(&threadR, NULL, threadFR, (void*)&sock);
@@ -123,53 +123,6 @@ void *threadFW(void *arg){
 
 int sockid = *(int*)arg;
 tipo_coda coda;
-/*
-	if(msgrcv(msg_id, &coda, sizeof(tipo_coda) - sizeof(long int), 3, 0) < 0){		//aspetto nick e user da visual
-		perror("Errore msgrcv\n");
-		msgctl(msg_id, IPC_RMID, 0);
-		exit(1);
-		}
-		
-		printf("Nick e user arrivati\n");
-		
-	if(send(sockid, coda.msg, strlen(coda.nick), 0)<0){   //invio nick e user a server
-		perror("Errore send\n");
-		msgctl(msg_id, IPC_RMID, 0);
-		exit(1);		
-		}
-	if(send(sockid, coda.msg, strlen(coda.user), 0)<0){
-		perror("Errore send\n");
-		msgctl(msg_id, IPC_RMID, 0);
-		exit(1);		
-		}
-		
-	printf("Inviati\n");
-*/
-		
-		if(msgrcv(msg_id, &coda, sizeof(tipo_coda) - sizeof(long int), 3, 0) < 0){		//aspetto nick e user da visual
-		perror("Errore msgrcv\n");
-		msgctl(msg_id, IPC_RMID, 0);
-		exit(1);
-		}
-		
-		printf("%s", coda.nick);
-		printf("%s", coda.user);
-		
-		if(send(sockid, coda.nick, strlen(coda.nick), 0)<0){
-		perror("Errore send\n");
-		msgctl(msg_id, IPC_RMID, 0);									//li mando al server
-		exit(1);		
-		}
-		
-		
-		if(send(sockid, coda.user, strlen(coda.user), 0)<0){
-		perror("Errore send\n");
-		msgctl(msg_id, IPC_RMID, 0);
-		exit(1);	
-			
-		}
-		printf("Accesso\n");
-		
 		
 	while(1){						//tutto quello mandato dal visualizzatore lo invio al server
 	
@@ -181,9 +134,9 @@ tipo_coda coda;
 			exit(1);
 		}
 		
-		printf("Ric da vis\n");
+		printf("Ric da vis -- %s\n", coda.msg);
 		
-	
+		
 		
 		if(send(sockid, coda.msg, strlen(coda.msg), 0)<0){
 			perror("Errore send\n");
@@ -193,15 +146,23 @@ tipo_coda coda;
 		
 		printf("Inv a serv %s\n", coda.msg);
 		
-		if(strcmp(coda.msg, "QUIT") == 0){
+		if(strcmp(coda.msg, "QUIT\n") == 0){
 			printf("Chiudo connessione\n");
 			msgctl(msg_id, IPC_RMID, 0);
+			close(sockid);
 			exit(0);
 		}
 
 	}
 
 }
+
+
+
+
+
+
+
 
 void *threadFR(void* arg){
 
@@ -212,7 +173,7 @@ tipo_coda coda;
 	
 
 
-	while(1){  // tutto quello che viene inviato dal server viene inserito nella coda di messaggi
+	while(1){  // tutto quello che viene ricevuto dal server viene inserito nella coda di messaggi
 	
 	
 	memset(coda.msg, '\0', MAX_BUF);
@@ -223,7 +184,7 @@ tipo_coda coda;
 		exit(1);	
 	}
 	
-	printf("Ric da ser \n");
+	printf("Ric da ser -- %s", coda.msg);
 	coda.m_type = 1; //invio a visualizzatore il messaggio letto dal server
 	if(msgsnd(msg_id, &coda, sizeof(tipo_coda) - sizeof(long int), 0)< 0){
 		perror("Errore msgsnd\n");
@@ -235,6 +196,53 @@ tipo_coda coda;
 
 	}
 
+
+}
+
+
+
+
+
+
+
+
+void loginserv(int sockid, int msg_id){
+
+tipo_coda coda;
+
+if(msgrcv(msg_id, &coda, sizeof(tipo_coda) - sizeof(long int), 3, 0) < 0){		//aspetto nick e user da visual
+		perror("Errore msgrcv\n");
+		msgctl(msg_id, IPC_RMID, 0);
+		exit(1);
+		}
+		
+		printf("Nick e user arrivati\n");
+		
+	if(send(sockid, coda.nick, strlen(coda.nick), 0)<0){   //invio nick e user a server
+		perror("Errore send\n");
+		msgctl(msg_id, IPC_RMID, 0);
+		exit(1);		
+		}
+	
+		
+	if(send(sockid, coda.user, strlen(coda.user), 0)<0){
+		perror("Errore send\n");
+		msgctl(msg_id, IPC_RMID, 0);
+		exit(1);		
+		}
+	
+	if(send(sockid, coda.nick, strlen(coda.nick), 0)<0){   
+		perror("Errore send\n");
+		msgctl(msg_id, IPC_RMID, 0);
+		exit(1);		
+		}
+		
+	printf("Inviati\n");
+
+	
+		
+		printf("%s", coda.nick);
+		printf("%s", coda.user);
 
 }
 
