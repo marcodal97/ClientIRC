@@ -185,7 +185,21 @@ tipo_coda coda;
 		exit(1);	
 	}
 	
+	
 	printf("Ric da ser -- %s", coda.msg);
+	
+	if(coda.msg[0] == 'P' && coda.msg[1] == 'I' && coda.msg[2] == 'N' && coda.msg[3] == 'G'){
+		if(PONG(sockid) < 0){
+			perror("Errore msgsnd\n");
+			msgctl(msg_id, IPC_RMID, 0);
+			exit(1);
+		}
+		printf("PONG INVIATO\n");
+	}
+	
+	
+	
+	
 	coda.m_type = 1; //invio a visualizzatore il messaggio letto dal server
 	if(msgsnd(msg_id, &coda, sizeof(tipo_coda) - sizeof(long int), 0)< 0){
 		perror("Errore msgsnd\n");
@@ -247,6 +261,24 @@ if(msgrcv(msg_id, &coda, sizeof(tipo_coda) - sizeof(long int), 3, 0) < 0){		//as
 		printf("%s", coda.nick);
 		printf("%s", coda.user);
 
+}
+
+
+
+int PONG(int sock){ //Quando arriva ping dal server si manda questa funzione in esecuzione
+
+int ris;
+
+char str[MAX_BUF];
+
+strcpy(str, "PONG");
+
+str[strlen(str)] = '\n';
+str[strlen(str)+1] = '\0';
+
+ris = send(sock, str, strlen(str), 0);
+
+return ris;
 }
 
 
