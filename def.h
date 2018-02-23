@@ -26,3 +26,8 @@ char server[50];
 
 void login(int msg_id);
 void loginserv(int sockid, int msg_id);
+
+void creaNICK(char *nick, char *comando);
+void creaUSER(char *nome, char *comando);
+
+int PONG(int sock);
