@@ -218,6 +218,8 @@ if(msgrcv(msg_id, &coda, sizeof(tipo_coda) - sizeof(long int), 3, 0) < 0){		//as
 		
 		printf("Nick e user arrivati\n");
 		
+		
+		
 	if(send(sockid, coda.nick, strlen(coda.nick), 0)<0){   //invio nick e user a server
 		perror("Errore send\n");
 		msgctl(msg_id, IPC_RMID, 0);
