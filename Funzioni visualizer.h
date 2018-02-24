@@ -49,15 +49,14 @@ void mod_config(){
 	printf("Inserire il nome del server: ");
 	memset(nome_server, '\0', MAX_BUF);
 	getchar();
-	//while(fgets(nome_server, 50, stdin)==NULL);	
-	scanf("%s", nome_server);
-	getchar();
-	printf("%ld\n", sizeof(nome_server));
-	nome_server[strlen(nome_server)]='\0';
+	while(fgets(nome_server, 50, stdin)==NULL);	
+	//scanf("%s", nome_server);
+	//printf("%ld\n", sizeof(nome_server));
+	//nome_server[strlen(nome_server)]='\0';
 	printf("Inserire il nome della porta: ");
-	scanf("%s", porta);
+	//scanf("%s", porta);
+	while(fgets(porta, 50, stdin)==NULL);	
 	printf("Inserire il nickname: ");
-	getchar();
 	while(fgets(nick, MAX_BUF-1, stdin)==NULL);
 	printf("Inserisci l'username: ");
 	while(fgets(user, MAX_BUF-1, stdin)==NULL);
@@ -71,7 +70,7 @@ void mod_config(){
 	strcat(username, user);
 	strcpy(text, nome_server);
 	strcat(text, "\n");
-	strcat(text, (char *)porta);
+	strcat(text, porta);
 	strcat(text, nickname);
 	strcat(text, username);
 	if(fputs(text, fp)==0){
