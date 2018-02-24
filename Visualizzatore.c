@@ -1,109 +1,148 @@
-#include <sys/ipc.h>
-#include <sys/msg.h>
-#include "def.h"
-#include <sys/types.h>
 #include <stdio.h>
-#include <sys/wait.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 #include <pthread.h>
 #include <string.h>
+#include "def.h"
+#include "Funzioni visualizer.h"
 
 
-int msg_id;
+//int msg_id;
 
 
+void *threadVW(void *arg);
+void *threadVR(void *arg);
+void login();
 
 int main(){
+	pthread_t threadW, threadR;
+	tipo_coda coda;
+	int scelta;
+	char ch;
 
-pthread_t threadW, threadR;
-tipo_coda coda;
+	msg_id = msgget((key_t)MSG_KEY, 0666 | IPC_CREAT);
+	if(msg_id < 0){
+		printf("Errore msgget\n");
+		exit(1);
+	}
+	
+	coda.m_type = 3;
+	
+	
+	//File di configurazione
+	while(ch!='S'){
+		scelta=connection_menu();
+		switch(scelta){
+			case 1:
+				mod_config();
+				break;
+			case 2:
+				ch=irc_reg();			
+				break;	
+		}
+	}
+	
+	printf("Dati inviati\n");
 
-msg_id = msgget((key_t)MSG_KEY, 0666 | IPC_CREAT);
-if(msg_id < 0){
-printf("Errore msgget\n");
-exit(1);
-}
+	if(msgrcv(msg_id, &coda, sizeof(tipo_coda) - sizeof(long int), 1, 0)<0){
+		perror("Impossible receive.\n");
+		exit(EXIT_FAILURE);
+	}	
+	if(strncmp(coda.msg, "ok", 2) != 0){
+		perror("Errore connessione\n");
+		exit(EXIT_FAILURE);
+	}
+	printf("Connessione riuscita\n");
 
+	//creo thread di scrittura in client e lettura da client
+	
+	pthread_create(&threadW, NULL, threadVW, NULL);
+	pthread_create(&threadR, NULL, threadVR, NULL);
 
-
-
-
-strcpy(coda.server, "irc.freenode.net");
-coda.porta = 6667;
-coda.m_type = 3;
-
-
-
-printf("Invio dati\n%s\n%d", coda.server, coda.porta);
-
-if(msgsnd(msg_id, &coda, sizeof(tipo_coda) - sizeof(long int), 0)< 0){
-perror("Errore msgsnd\n");
-exit(1);
-}
-
-
-printf("Dati inviati\n");
-
-msgrcv(msg_id, &coda, sizeof(tipo_coda) - sizeof(long int), 1, 0);
-
-if(strcmp(coda.msg, "ok") != 0){
-	perror("Errore connessione\n");
-	exit(1);
-}
-
-printf("Connessione riuscita\n");
-
-
-//creo thread di scrittura in client e lettura da client
-
-
-login(msg_id);
-
-
-pthread_create(&threadW, NULL, threadVW, NULL);
-
-pthread_create(&threadR, NULL, threadVR, NULL);
-
-
-pause();
+	pause();
 
 }
-     
 
-
-
-
-
+void toclient(char *commando){
+	strcpy(coda.msg, commando);
+	printf("%s", coda.msg);
+	if(msgsnd(msg_id, &coda, sizeof(tipo_coda) - sizeof(long int), 0)< 0){
+			perror("Errore msgsnd\n");
+			exit(1);
+		}	
+		
+		
+	if(strcmp(coda.msg, "QUIT\n") == 0){
+			printf("Uscita...\n");
+			exit(0);
+	}
+}
 
 void *threadVW(void *arg){
 
 	int scelta;
-	tipo_coda coda;
-
+	tipo_coda coda;	
+	char stanza[MAX_BUF];
 	
-
-		while(1){
-		
-			while(fgets(coda.msg,MAX_BUF-1,stdin)==NULL);  //aspetto che si scriva qualcosa e lo mando al client
-			coda.m_type = 3;
-			
-			
-			
-					
-			if(msgsnd(msg_id, &coda, sizeof(tipo_coda) - sizeof(long int), 0)< 0){
-				perror("Errore msgsnd\n");
-				exit(1);
-			}	
-			
-			
-			if(strcmp(coda.msg, "QUIT\n") == 0){
-				printf("Uscita...\n");
-				exit(0);
-			}
-	
-	
+	do{
+		scelta=menu();
+		switch(scelta){
+			case 1:			
+				printf("Che nick vuoi utilizzare? ");
+				scanf("%s", coda.msg);
+				irc_nick(coda.msg);
+				toclient(coda.msg);
+				break;
+			case 2:
+				printf("Inserisci il nome della stanza: ");
+				scanf("%s", coda.msg);
+				strcpy(stanza, coda.msg);
+				irc_join(coda.msg);	
+				toclient(coda.msg);			
+				funzione_stanza(stanza);
+				break;
+			case 3:
+				printf("Inserisci la stanza che vuoi lasciare: ");
+				scanf("%s", coda.msg);
+				irc_part(coda.msg);
+				toclient(coda.msg);
+			case 4:
+				break;
+			case 5:
+				
+			case 10:
+				irc_free();
+				break;
+				
 		}	
+	}while(scelta!=9);
+
+	/*while(1){
+	
+			
+		while(fgets(coda.msg,MAX_BUF-1,stdin)==NULL);  //aspetto che si scriva qualcosa e lo mando al client
+		coda.m_type = 3;
+		
+		
+		
+				
+		if(msgsnd(msg_id, &coda, sizeof(tipo_coda) - sizeof(long int), 0)< 0){
+			perror("Errore msgsnd\n");
+			exit(1);
+		}	
+		
+		
+		if(strcmp(coda.msg, "QUIT\n") == 0){
+			printf("Uscita...\n");
+			exit(0);
+		}
+
+
+	}*/	
 
 }
 
@@ -121,7 +160,7 @@ tipo_coda coda;
 		
 		if(msgrcv(msg_id, &coda, sizeof(tipo_coda) - sizeof(long int), 1, 0) < 0){
 			perror("Errore msgrcv\n");
-			exit(1);
+			exit(EXIT_FAILURE);
 		}	
 	
 	printf("%s", coda.msg);
@@ -134,57 +173,6 @@ tipo_coda coda;
 
 
 
-void login(int msg_id){
-
-char nick[50];
-char user[50];
-int scelta;
-
-tipo_coda coda;
-
-strcpy(nick, "NICK marcodal97\n");
-strcpy(user, "USER marco marco marco marco\n");
-
-
-do{
-	printf("************Menu'************\n");
-	printf("1. Cambia file di config\n");
-	printf("2. Usa il file di config presente\n");
-	
-	scanf("%d", &scelta);
-	
-		if(scelta == 1){
-			
-			memset(nick, '\0', 50);
-			memset(user, '\0', 50);
-		
-			printf("Inserisci NICK: ");
-			scanf(" %[^\n]s", nick);
-			printf("Inserisci USER: ");
-			scanf(" %[^\n]s", user);	
-			
-			nick[strlen(nick)] = '\n';		
-			user[strlen(user)] ='\n';
-			
-			printf("%s%s", nick, user);	
-		}
-	}while(scelta == 1);
-	
-	
-	printf("Invio dati login a client\n");
-	
-	coda.m_type = 3;
-	strcpy(coda.nick, nick);
-	strcpy(coda.user, user);
-	
-	if(msgsnd(msg_id, &coda, sizeof(tipo_coda) - sizeof(long int), 0)< 0){
-		perror("Errore msgsnd\n");
-		exit(1);
-	}
-	
-	printf("Inviati nick e user\n");
-
-}
 
 
 
