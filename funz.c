@@ -10,31 +10,21 @@
 
 void creaNICK(char *nick, char *comando){  //COMPONE COMANDO NICK (comando è la stringa finale che viene mandata al client)
 
-memset(comando, '\0', MAX_BUF);
-
-strcpy(comando, "NICK ");
-
-strcat(comando, nick]);
-
-comando[strlen(comando)+1] = '\0';
-comando[strlen(comando)] = '\n';
-
+	memset(comando, '\0', MAX_BUF);
+	strcpy(comando, "NICK ");
+	strcat(comando, nick]);
+	comando[strlen(comando)+1] = '\0';
+	comando[strlen(comando)] = '\n';
 }
-
-
 
 void creaUSER(char *nome, char *comando){ //COMPONE COMANDO USER (comando è la stringa finale che viene mandata al client)
 
-
-memset(comando, '\0', MAX_BUF);
-
-strcpy(comando, "USER ");
-
-strcat(comando, "guest guest guest :");
-strcat(comando, nome);
-
-comando[strlen(comando)+1] = '\0';
-comando[strlen(comando)] = '\n';
+	memset(comando, '\0', MAX_BUF);
+	strcpy(comando, "USER ");
+	strcat(comando, "guest guest guest :");
+	strcat(comando, nome);
+	comando[strlen(comando)+1] = '\0';
+	comando[strlen(comando)] = '\n';
 
 }
 
@@ -43,39 +33,28 @@ comando[strlen(comando)] = '\n';
 
 int PONG(int sock){ //Quando arriva ping dal server si manda questa funzione in esecuzione
 
-int ris;
+	int ris;
+	char str[6];
+	strcpy(str, "PONG");
+	str[strlen(str)] = '\n';
+	str[strlen(str)+1] = '\0';
+	ris = send(sock, str, strlen(str), 0);
 
-char str[MAX_BUF];
-
-strcpy(str, "PONG");
-
-str[strlen(str)] = '\n';
-str[strlen(str)+1] = '\0';
-
-ris = send(sock, str, strlen(str), 0);
-
-return ris;
+	return ris;
 }
-
-
 
 
 
 void JOIN(char *comando){  //Crea comando per entrare in una stanza
 
-char stanza[MAX_BUX];
-
-printf("Inserisci nome stanza: \n");
-scanf("%s", stanza);
-
-memset(comando, '\0', MAX_BUF);
-
-strcpy(comando, "JOIN ");
-
-strcat(comando, stanza);
-
-comando[strlen(comando)] = '\n';
-comando[strlen(comando)+1] = '\0';
+	char stanza[MAX_BUX];
+	printf("Inserisci nome stanza: \n");
+	scanf("%s", stanza);
+	memset(comando, '\0', MAX_BUF);
+	strcpy(comando, "JOIN ");
+	strcat(comando, stanza);
+	comando[strlen(comando)] = '\n';
+	comando[strlen(comando)+1] = '\0';
 
 }
 

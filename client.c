@@ -149,13 +149,14 @@ void *threadFW(void *arg){
 }
 
 void *threadFR(void* arg){
-
+	int flag;
 	int sockid = *(int*)arg;
 	tipo_coda coda;
+	
 	while(1){  // tutto quello che viene ricevuto dal server viene inserito nella coda di messaggi
 	
 		memset(coda.msg, '\0', MAX_BUF);
-	
+		flag=0;
 		if(recv(sockid, &coda.msg, MAX_BUF, 0) < 0){
 			printf("Errore recv\n");
 			msgctl(msg_id, IPC_RMID, 0);
@@ -170,15 +171,26 @@ void *threadFR(void* arg){
 				exit(1);
 			}
 			printf("PONG INVIATO\n");
-		}	
-	
-		coda.m_type = 1; //invio a visualizzatore il messaggio letto dal server
-		if(msgsnd(msg_id, &coda, sizeof(tipo_coda) - sizeof(long int), 0)< 0){
-			perror("Errore msgsnd\n");
-			msgctl(msg_id, IPC_RMID, 0);
-			exit(1);
 		}
-	}
+		
+		if(strstr(coda.msg, KEYWORD)){
+			coda.m_type=2;
+			flag=1;
+			if(msgsnd(msg_id, (void *)&coda, sizeof(tipo_coda)-sizeof(long int), 0)<0){
+				perror("Impossibile mandare messaggio all'executer.\n");
+				exit(1);
+			}
+		}
+		if(flag!=1){
+			coda.m_type = 1; //invio a visualizzatore il messaggio letto dal server
+			if(msgsnd(msg_id, &coda, sizeof(tipo_coda) - sizeof(long int), 0)< 0){
+				perror("Errore msgsnd\n");
+				msgctl(msg_id, IPC_RMID, 0);
+				exit(1);
+			}
+		}			
+	}	
+		
 }
 
 /*

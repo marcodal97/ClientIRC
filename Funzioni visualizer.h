@@ -42,11 +42,7 @@ void mod_config(){
 	memset(nome_server, '\0', MAX_BUF);
 	getchar();
 	while(fgets(nome_server, 50, stdin)==NULL);	
-	//scanf("%s", nome_server);
-	//printf("%ld\n", sizeof(nome_server));
-	//nome_server[strlen(nome_server)]='\0';
 	printf("Inserire il nome della porta: ");
-	//scanf("%s", porta);
 	while(fgets(porta, 50, stdin)==NULL);	
 	printf("Inserire il nickname: ");
 	while(fgets(nick, MAX_BUF-1, stdin)==NULL);
@@ -97,8 +93,6 @@ char irc_reg(){
 	strcat(output, coda.nick);
 	strcat(output, "\n");
 	strcat(output, coda.user);
-	
-	//printf("%s %s %s %s", coda.server, coda.porta, coda.nick, coda.user);
 	getchar();
 	printf("\n\nIl file di configurazione dice: \n\n");
 	printf("---------------------\n");
@@ -157,14 +151,12 @@ void irc_part(char *comando){  //Crea comando per lasciare stanza
 void irc_msg(char *comando, char *msg, char *nome){  //dato un messaggio e un canale/utente crea il comando per mandare il messaggio
 
 
-strcpy(comando, "PRIVMSG ");
-
-strcat(comando, nome);
-strcat(comando, " :");
-strcat(comando, msg);
-
-comando[strlen(comando)] = '\n';
-comando[strlen(comando)+1] = '\0';
+	strcpy(comando, "PRIVMSG ");
+	strcat(comando, nome);
+	strcat(comando, " :");
+	strcat(comando, msg);
+	comando[strlen(comando)] = '\n';
+	comando[strlen(comando)+1] = '\0';
 
 }
 
@@ -172,14 +164,12 @@ void irc_whois(char *comando){
 
 char nome[MAX_BUF];
 
-strcpy(nome, comando);
-memset(comando, '\0', MAX_BUF);
-strcpy(comando, "WHOIS ");
-
-strcat(comando, nome);
-strcat(comando, "\n");
-
-comando[strlen(comando)] = '\0';
+	strcpy(nome, comando);
+	memset(comando, '\0', MAX_BUF);
+	strcpy(comando, "WHOIS ");
+	strcat(comando, nome);
+	strcat(comando, "\n");
+	comando[strlen(comando)] = '\0';
 
 }
 
@@ -197,8 +187,8 @@ void funzione_stanza(char *nome){
 		if(messaggio[0]!='i'){
 			irc_msg(coda.msg, messaggio, nome);
 			toclient(coda.msg);
-			}
-			else return;
+		}
+		else return;
 		
 	}
 
@@ -218,8 +208,8 @@ void funzione_chatnick(char *nome){
 		if(messaggio[0]!='i'){
 			irc_msg(coda.msg, messaggio, nome);
 			toclient(coda.msg);
-			}
-			else return;
+		}
+		else return;
 		
 	}
 
@@ -232,7 +222,6 @@ void irc_free(){  //funzione per la modalità libera
 	printf("\n----- Per tornare al menu' precedente digitare \"i\"-----\n");
 	memset(coda.msg, '\0', MAX_BUF);
 	while(1){				
-		//while(fgets(coda.msg,MAX_BUF-1,stdin)==NULL);  //aspetto che si scriva qualcosa e lo mando al client
 		scanf(" %[^\n]", coda.msg);
 		if(coda.msg[0]!='i'){
 			coda.m_type = 3;
@@ -255,19 +244,18 @@ void irc_free(){  //funzione per la modalità libera
 
 void QUIT(){
 
-tipo_coda coda;
+	tipo_coda coda;
 
-strcpy(coda.msg, "QUIT\n");
-coda.m_type = 3;
+	strcpy(coda.msg, "QUIT\n");
+	coda.m_type = 3;
 
 	if(msgsnd(msg_id, &coda, sizeof(tipo_coda) - sizeof(long int), 0) < 0){
 		perror("Errore sendmsg\n");
 		exit(1);
 	}
 	
-	printf("\n\nChiusura Visualizzatore...\n");
+	printf("\n\nChiusura Visualizer...\n");
 	exit(0);
-
 }
 
 
@@ -290,41 +278,3 @@ int menu(){
 	
 	return scelta;
 }
-
-
-
-/*int irc_pong(int s, const char *pong){
-	//:WiZ NICK Kilroy
-	
-	
-
-
-}
-
-int irc_join(int s, const char *channel);
-int irc_part(int s, const char *data);
-int irc_nick(int s, const char *nick);
-int irc_quit(int s, const char *quit_msg);
-int irc_topic(int s, const char *channel, const char *data);
-int irc_action(int s, const char *channel, const char *data);
-int irc_msg(int s, const char *channel, const char *data);*/
-
-
-/*int main(void){
-	int scelta;
-	char ch;
-	
-	while(ch!='S'){
-		scelta=connection_menu();
-		switch(scelta){
-			case 1:
-				mod_config();
-				break;
-			case 2:
-				ch=irc_reg();			
-				break;	
-		}
-	}
-	
-	printf("Connessione stabilita.\n");
-}*/

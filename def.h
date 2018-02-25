@@ -3,7 +3,10 @@
 #define MSG_KEY 6666
 
 
-const char* KEYWORD="EXEC: ";
+const char* KEYWORD=":EXEC :";
+const char* CHIOCCIOLA="@";
+
+
 char nickname[MAX_BUF];
 char username[MAX_BUF];
 char nick[MAX_BUF];

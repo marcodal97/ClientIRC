@@ -133,12 +133,12 @@ void *threadVW(void *arg){
 			case 7:
 				memset(coda.msg, '\0', MAX_BUF);
 				printf("Inserisci il nickname: ");
-				scanf("%s", coda.msg);								
+				scanf("%s", coda.msg);	
+				getchar();							
 				printf("\n------ Per tornare al menu' principale premere un tasto qualsiasi ------\n");
 				printf("------ Informazioni su \"%s\" ------\n", coda.msg);
 				irc_whois(coda.msg);
 				toclient(coda.msg);
-				getchar();
 				getchar();
 				break;			
 			case 8:
@@ -155,35 +155,39 @@ void *threadVW(void *arg){
 
 }
 
-
-
-
 void *threadVR(void *arg){
-
+char ch;
 tipo_coda coda;
 
 
-	while(1){
-	
-	memset(coda.msg, '\0', MAX_BUF);
+	while(1){	
+		memset(coda.msg, '\0', MAX_BUF);
 		
 		if(msgrcv(msg_id, &coda, sizeof(tipo_coda) - sizeof(long int), 1, 0) < 0){
 			perror("Errore msgrcv\n");
 			exit(EXIT_FAILURE);
-		}	
+		}
+		/*if(strstr(coda.msg, "\EXEC/")){
+			printf("%s", coda.msg);
+			memset(coda.msg, '\0', MAX_BUF);
+			ch=getchar();
+			coda.msg[0]=ch;
+			coda.m_type=2;
+			if(msgsnd(msg_id, &coda, sizeof(tipo_coda) - sizeof(long int), 0) < 0){
+				perror("Errore msgsnd\n");
+				exit(EXIT_FAILURE);
+			}
+			if(msgrcv(msg_id, &coda, sizeof(tipo_coda) - sizeof(long int), 4, 0) < 0){
+				perror("Errore msgrcv\n");
+				exit(EXIT_FAILURE);
+			}
+			printf("%s", coda.msg);
+			toclient(coda.msg);
+		}*/
 	
-	printf("%s", coda.msg);
+		
+		printf("%s", coda.msg);
 
 	}
 
 }
-
-
-
-
-
-
-
-
-
-
