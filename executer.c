@@ -32,16 +32,8 @@ void trova_user(char *command, char *user_scrivente){
 		}
 		strcpy(user_scrivente, inizio);
 	}
-	//printf("User: %s\n", user_scrivente);
 }
 
-void componi_messaggio(char *comando, char *user_scrivente, char* messaggio){
-	strcpy(messaggio, "|EXEC| L'user ");
-	strcat(messaggio, user_scrivente);
-	strcat(messaggio, " ha mandato il comando ");
-	strcat(messaggio, comando);
-	strcat(messaggio, ". Vuoi eseguirlo? S(si) N(no).\n");
-}
 
 int main(void){
 	int msg_id;
@@ -54,6 +46,7 @@ int main(void){
 	char messaggio[MAX_BUF];
 	char *str;
 	
+	
 	msg_id=msgget(MSG_KEY, 0666 | IPC_CREAT);
 	if(msg_id==-1){
 		perror("Impossible to create the message queue.\n");
@@ -61,8 +54,7 @@ int main(void){
 	}
 	
 	while(1){
-		memset(com, '\0', MAX_BUF);
-		memset(output, '\0', MAX_BUF);
+		
 		memset(coda.msg, '\0', MAX_BUF);
 		memset(messaggio, '\0', MAX_BUF);
 		memset(user_scrivente, '\0', MAX_BUF);
@@ -113,7 +105,8 @@ int main(void){
 			
 			sleep(1);
 		}
-	
+		memset(com, '\0', MAX_BUF);
+		memset(output, '\0', MAX_BUF);
 		
 		pclose(fp);
 	}	

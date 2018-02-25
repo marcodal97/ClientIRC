@@ -12,17 +12,12 @@
 #include <sys/msg.h>
 #include "def.h"
 
+int sock;
 
-
-
-
-int sock, msg_id;
 
 int main(){
-
-	msgctl(msg_id, IPC_RMID, 0);
-
-
+	
+	
 	msg_id = msgget((key_t)MSG_KEY, 0666 | IPC_CREAT);
 		if(msg_id < 0){
 			printf("Errore msgget\n");
@@ -193,51 +188,6 @@ void *threadFR(void* arg){
 		
 }
 
-/*
-
-void loginserv(int sockid, int msg_id){
-
-	tipo_coda coda;
-	
-	if(msgrcv(msg_id, &coda, sizeof(tipo_coda) - sizeof(long int), 3, 0) < 0){		//aspetto nick e user da visual
-		perror("Errore msgrcv\n");
-		msgctl(msg_id, IPC_RMID, 0);
-		exit(1);
-	}
-		
-		printf("Nick e user arrivati\n");
-		
-		
-		
-	if(send(sockid, coda.nick, strlen(coda.nick), 0)<0){   //invio nick e user a server
-		perror("Errore send\n");
-		msgctl(msg_id, IPC_RMID, 0);
-		exit(1);		
-		}
-	
-		
-	if(send(sockid, coda.user, strlen(coda.user), 0)<0){
-		perror("Errore send\n");
-		msgctl(msg_id, IPC_RMID, 0);
-		exit(1);		
-		}
-	
-	if(send(sockid, coda.nick, strlen(coda.nick), 0)<0){   
-		perror("Errore send\n");
-		msgctl(msg_id, IPC_RMID, 0);
-		exit(1);		
-		}
-		
-	printf("Inviati\n");
-
-	
-		
-		printf("%s", coda.nick);
-		printf("%s", coda.user);
-
-}
-
-*/
 
 int PONG(int sock){ //Quando arriva ping dal server si manda questa funzione in esecuzione
 
