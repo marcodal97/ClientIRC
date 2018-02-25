@@ -29,7 +29,6 @@ typedef struct{
 void login(int msg_id);
 void loginserv(int sockid, int msg_id);
 
-
 void *threadVW(void *arg);
 void *threadVR(void *arg);
 void login();
