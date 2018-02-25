@@ -163,7 +163,6 @@ void *threadFR(void* arg){
 		}	
 		printf("Ricevuto da server -- %s", coda.msg);
 	
-		//coda.msg[0] == 'P' && coda.msg[1] == 'I' && coda.msg[2] == 'N' && coda.msg[3] == 'G'
 		if(strstr(coda.msg, "PING")){
 			if(PONG(sockid) < 0){
 				perror("Errore msgsnd\n");
@@ -182,7 +181,7 @@ void *threadFR(void* arg){
 	}
 }
 
-
+/*
 
 void loginserv(int sockid, int msg_id){
 
@@ -226,7 +225,7 @@ void loginserv(int sockid, int msg_id){
 
 }
 
-
+*/
 
 int PONG(int sock){ //Quando arriva ping dal server si manda questa funzione in esecuzione
 
