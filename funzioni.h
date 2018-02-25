@@ -86,9 +86,9 @@ char irc_reg(){
 	strcat(output, coda.user);
 	getchar();
 	printf("\n\nIl file di configurazione dice: \n\n");
-	printf("---------------------\n");
+	printf("-------------------------------------\n");
 	printf("%s", output);
-	printf("\n---------------------\n");
+	printf("\n-------------------------------------\n");
 	printf("\n\nConfermare il file?(S=si, N=no)\n");
 	ch=getchar();
 	if(ch=='S'){		
@@ -171,7 +171,7 @@ void funzione_stanza(char *nome){
 	char messaggio[MAX_BUF];
 	tipo_coda coda;
 	printf("\n\n-----Sei entrato nella stanza \"%s\"------\n", nome);
-	printf("\n----- Per tornare al menu' precedente digitare \"/back\"-----\n");
+	printf("----- Per tornare al menu' precedente digitare \"/back\"-----\n\n");
 	while(1){
 		memset(coda.msg, '\0', MAX_BUF);
 		memset(messaggio, '\0', MAX_BUF);
@@ -215,7 +215,7 @@ void funzione_chatnick(char *nome){
 	char messaggio[MAX_BUF];
 	tipo_coda coda;
 	printf("\n\n----- Puoi chattare con \"%s\"------\n", nome);
-	printf("\n----- Per tornare al menu' precedente digitare \"/back\"-----\n");
+	printf("----- Per tornare al menu' precedente digitare \"/back\"-----\n\n");
 	while(1){
 		memset(coda.msg, '\0', MAX_BUF);
 		memset(messaggio, '\0', MAX_BUF);
@@ -246,7 +246,7 @@ void irc_command(char *nome, char *msg){
 void irc_free(){  //funzione per la modalità libera
 	tipo_coda coda;
 	
-	printf("\n----- Per tornare al menu' precedente digitare \"/back\"-----\n");
+	printf("\n----- Per tornare al menu' precedente digitare \"/back\"-----\n\n");
 	
 	while(1){		
 		memset(coda.msg, '\0', MAX_BUF);		
@@ -277,8 +277,17 @@ void QUIT(){
 	tipo_coda coda;
 
 	strcpy(coda.msg, "QUIT\n");
+	
 	coda.m_type = 3;
 
+	if(msgsnd(msg_id, &coda, sizeof(tipo_coda) - sizeof(long int), 0) < 0){
+		perror("Errore sendmsg\n");
+		msgctl(msg_id, IPC_RMID, 0);
+		exit(1);
+	}
+	
+	coda.m_type = 2;
+	
 	if(msgsnd(msg_id, &coda, sizeof(tipo_coda) - sizeof(long int), 0) < 0){
 		perror("Errore sendmsg\n");
 		msgctl(msg_id, IPC_RMID, 0);
@@ -294,18 +303,17 @@ void QUIT(){
 int menu(){
 	int scelta;
 	
-	printf("************Menu'************\n");
+	printf("\n\n*****************Menu'*****************\n");
 	printf("1-Cambia il tuo nick.\n");
 	printf("2-Entra e scrivi all'interno di una stanza.\n");
 	printf("3-Lascia una stanza.\n");
 	printf("4-Setta o rimuovi un nuovo topic.\n");
 	printf("5-Parla con un utente\n");
-	printf("6-Cerca utenti.\n");
+	printf("6-Informazioni utenti di una stanza.\n");
 	printf("7-Informazioni su un utente.\n");
 	printf("8-Esci da IRC e dal client.\n");
 	printf("9-Inserisci da tastiera i comandi.\n");
-	printf("10-Esegui un comando in una stanza.\n");
-	printf("Inserisci la tua scelta: ");
+	printf("10-Esegui un comando in una stanza.\n\n");
 	scanf("%d", &scelta);
 	
 	return scelta;

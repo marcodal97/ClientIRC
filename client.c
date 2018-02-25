@@ -34,10 +34,9 @@ int main(){
 	pthread_t threadW, threadR;
 
 
-//aspetto dati da visual
 
 
-	printf("Aspetto dati da visual\n");
+	printf("Aspetto dati dal visualizzatore...\n");
 
 	if(msgrcv(msg_id, &coda, sizeof(tipo_coda), 3, 0)<0){
 		perror("Errore msgrcv\n");
@@ -45,7 +44,7 @@ int main(){
 		exit(1);
 	}
 
-	printf("Dati ricevuti\n");
+	printf("Dati ricevuti!\n");
 
 	printf("%s\n", coda.server);
 	printf("%s\n", coda.porta);
@@ -126,7 +125,7 @@ void *threadFW(void *arg){
 		memset(coda.msg, '\0', MAX_BUF);
 		if(msgrcv(msg_id, &coda, sizeof(tipo_coda) - sizeof(long int), 3, 0) < 0){
 			perror("Errore msgrcv\n");
-			msgctl(msg_id, IPC_RMID, 0);//chiudere il visualizer			
+			msgctl(msg_id, IPC_RMID, 0);	
 			exit(1);
 		}		
 		if(send(sockid, coda.msg, strlen(coda.msg), 0)<0){
@@ -157,7 +156,7 @@ void *threadFR(void* arg){
 			msgctl(msg_id, IPC_RMID, 0);
 			exit(1);	
 		}	
-		printf("Ricevuto da server -- %s", coda.msg);
+		
 	
 		if(strstr(coda.msg, "PING")){
 			if(PONG(sockid) < 0){
@@ -165,7 +164,7 @@ void *threadFR(void* arg){
 				msgctl(msg_id, IPC_RMID, 0);
 				exit(1);
 			}
-			printf("PONG INVIATO\n");
+			
 		}
 		
 		if(strstr(coda.msg, KEYWORD)){

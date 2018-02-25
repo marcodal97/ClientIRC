@@ -58,12 +58,16 @@ int main(void){
 		memset(coda.msg, '\0', MAX_BUF);
 		memset(messaggio, '\0', MAX_BUF);
 		memset(user_scrivente, '\0', MAX_BUF);
-		printf("**************Aspetto che arrivi qualcosa all'executer**************\n");
+		
 		if(msgrcv(msg_id, (void *)&coda, sizeof(tipo_coda)-sizeof(long int), 2, 0)==-1){
 			perror("[EXECUTER]Impossible to receive a new message.\n");
 			exit(EXIT_FAILURE);
 		}
-		printf("E' arrivato: %s\n", coda.msg);
+		
+		if(strcmp(coda.msg, "QUIT\n") == 0){
+		exit(0);
+		}
+		
 		strcpy(command, coda.msg);		
 		memset(coda.msg, '\0', MAX_BUF);					
 		com=strstr(command, KEYWORD);
@@ -74,14 +78,16 @@ int main(void){
 		
 			
 		com[strlen(com)-2]='\0';
-		printf("Com: |%s|", com);
 		
+		printf("\n\n******* EXECUTER *******\n");
+		printf("E' stato richiesto il comando: %s\n\n", com);
+		printf("Inviati i risultati:\n");
 		fp=popen(com, "r");
 		if(fp==NULL){
 			perror("Impossible popen.\n");
 			exit(EXIT_FAILURE);
 		}
-		printf("[EXECUTER]Sono arrivato alla popen.\n");
+		
 
 		fread(output,MAX_BUF,1,fp);
 		
@@ -107,7 +113,7 @@ int main(void){
 		}
 		memset(com, '\0', MAX_BUF);
 		
-		
+		printf("\n\n");
 		pclose(fp);
 	}	
 }

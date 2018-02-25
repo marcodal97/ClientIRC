@@ -8,11 +8,11 @@
 #include <pthread.h>
 #include <string.h>
 #include "def.h"
-#include "Funzioni visualizer.h"
+#include "funzioni.h"
 
 
 
-//int msg_id;
+
 
 
 
@@ -100,13 +100,13 @@ void *threadVW(void *arg){
 		
 		switch(scelta){
 			case 1:		
-				printf("Che nick vuoi utilizzare? ");
+				printf("\nChe nick vuoi utilizzare? ");
 				scanf("%s", coda.msg);
 				irc_nick(coda.msg);
 				toclient(coda.msg);
 				break;
 			case 2:
-				printf("Inserisci il nome della stanza in cui vuoi entrare: ");
+				printf("\nInserisci il nome della stanza in cui vuoi entrare: ");
 				scanf("%s", coda.msg);
 				strcpy(nome, coda.msg);
 				irc_join(coda.msg);	
@@ -114,7 +114,7 @@ void *threadVW(void *arg){
 				funzione_stanza(nome);
 				break;				
 			case 3:
-				printf("Inserisci il nome della stanza che vuoi lasciare: ");
+				printf("\nInserisci il nome della stanza che vuoi lasciare: ");
 				scanf("%s", coda.msg);
 				strcpy(nome, coda.msg);
 				irc_part(coda.msg);
@@ -122,10 +122,10 @@ void *threadVW(void *arg){
 				printf("\n-----Hai lasciato la stanza \"%s\"-----\n", nome);
 				break;
 			case 4:
-				printf("Inserisci il nome della stanza: ");
+				printf("\nInserisci il nome della stanza: ");
 				scanf("%s", stanza);
 				getchar();
-				printf("Inserisci il topic da inserire: ");
+				printf("\nInserisci il topic da inserire: ");
 				fgets(nome, MAX_BUF, stdin);
 				strcpy(coda.msg, nome);
 				irc_topic(stanza, coda.msg);
@@ -133,24 +133,28 @@ void *threadVW(void *arg){
 				printf("Topic mandato.\n");
 				break;
 			case 5:		
-				printf("Inserisci il nickname: ");
+				printf("\nInserisci il nickname: ");
 				scanf("%s", coda.msg);
 				strcpy(nome, coda.msg);
 				funzione_chatnick(nome);				
 				break;
 			case 6:
-				printf("Inserire il tipo di utenti da cercare: ");
+				printf("\nInserire il nome della stanza: ");
 				scanf("%s", nome);
+				getchar();							
+				printf("\n------ Per tornare al menu' principale premere \"Invio\" ------\n");
+				printf("------ Informazioni su utenti in \"%s\" ------\n\n", nome);
 				strcpy(coda.msg, nome);
 				irc_who(coda.msg);				
 				toclient(coda.msg);
+				getchar();
 				break;				
 			case 7:
-				printf("Inserisci il nickname: ");
+				printf("\nInserisci il nickname: ");
 				scanf("%s", coda.msg);	
 				getchar();							
-				printf("\n------ Per tornare al menu' principale premere un tasto qualsiasi ------\n");
-				printf("------ Informazioni su \"%s\" ------\n", coda.msg);
+				printf("\n------ Per tornare al menu' principale premere \"Invio\" ------\n");
+				printf("------ Informazioni su \"%s\" ------\n\n", coda.msg);
 				irc_whois(coda.msg);
 				toclient(coda.msg);
 				getchar();
@@ -162,7 +166,7 @@ void *threadVW(void *arg){
 				irc_free();				
 				break;
 			case 10:
-				printf("Inserisci la stanza: ");
+				printf("\nInserisci la stanza: ");
 				scanf("%s", stanza);
 				getchar();
 				printf("Inserire il comando da inviare: ");
@@ -172,7 +176,7 @@ void *threadVW(void *arg){
 				toclient(coda.msg);
 				break;
 			default:
-				printf("Hai sbagliato a selezionare il numero.");
+				printf("\nHai sbagliato a selezionare il numero.");
 				break;
 				
 		}	
