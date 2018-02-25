@@ -56,5 +56,6 @@ void irc_free();
 void funzione_stanza(char *nome);
 void funzione_chatnick(char *nome);
 int menu();
-
 int msg_id;
+
+

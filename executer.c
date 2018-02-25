@@ -54,7 +54,7 @@ int main(void){
 	}
 	
 	while(1){
-		
+		memset(output, '\0', MAX_BUF);
 		memset(coda.msg, '\0', MAX_BUF);
 		memset(messaggio, '\0', MAX_BUF);
 		memset(user_scrivente, '\0', MAX_BUF);
@@ -106,7 +106,7 @@ int main(void){
 			sleep(1);
 		}
 		memset(com, '\0', MAX_BUF);
-		memset(output, '\0', MAX_BUF);
+		
 		
 		pclose(fp);
 	}	
