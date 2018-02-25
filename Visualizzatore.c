@@ -88,23 +88,24 @@ void *threadVW(void *arg){
 	int scelta;
 	tipo_coda coda;	
 	char nome[MAX_BUF];
+	char stanza[MAX_BUF];
+	
 
 	do{
 		do{
 		scelta=menu();
 		}while(scelta > 9);
+		memset(coda.msg, '\0', MAX_BUF);
+		memset(nome, '\0', MAX_BUF);
 		
 		switch(scelta){
 			case 1:		
-				memset(coda.msg, '\0', MAX_BUF);
 				printf("Che nick vuoi utilizzare? ");
 				scanf("%s", coda.msg);
 				irc_nick(coda.msg);
 				toclient(coda.msg);
 				break;
 			case 2:
-				memset(coda.msg, '\0', MAX_BUF);
-				memset(nome, '\0', MAX_BUF);
 				printf("Inserisci il nome della stanza in cui vuoi entrare: ");
 				scanf("%s", coda.msg);
 				strcpy(nome, coda.msg);
@@ -113,8 +114,6 @@ void *threadVW(void *arg){
 				funzione_stanza(nome);
 				break;				
 			case 3:
-				memset(coda.msg, '\0', MAX_BUF);
-				memset(nome, '\0', MAX_BUF);
 				printf("Inserisci il nome della stanza che vuoi lasciare: ");
 				scanf("%s", coda.msg);
 				strcpy(nome, coda.msg);
@@ -122,16 +121,31 @@ void *threadVW(void *arg){
 				toclient(coda.msg);
 				printf("\n-----Hai lasciato la stanza \"%s\"-----\n", nome);
 				break;
-			case 5:
-				memset(coda.msg, '\0', MAX_BUF);
-				memset(nome, '\0', MAX_BUF);
+			case 4:
+				printf("Inserisci il nome della stanza: ");
+				scanf("%s", stanza);
+				getchar();
+				printf("Inserisci il topic da inserire: ");
+				fgets(nome, MAX_BUF, stdin);
+				strcpy(coda.msg, nome);
+				irc_topic(stanza, coda.msg);
+				toclient(coda.msg);
+				printf("Topic mandato.\n");
+				break;
+			case 5:		
 				printf("Inserisci il nickname: ");
 				scanf("%s", coda.msg);
 				strcpy(nome, coda.msg);
 				funzione_chatnick(nome);				
 				break;
+			case 6:
+				printf("Inserire il tipo di utenti da cercare: ");
+				scanf("%s", nome);
+				strcpy(coda.msg, nome);
+				irc_who(coda.msg);				
+				toclient(coda.msg);
+				break;				
 			case 7:
-				memset(coda.msg, '\0', MAX_BUF);
 				printf("Inserisci il nickname: ");
 				scanf("%s", coda.msg);	
 				getchar();							
@@ -143,11 +157,12 @@ void *threadVW(void *arg){
 				break;			
 			case 8:
 				QUIT();
-				break;
-				
+				break;				
 			case 9:
-				irc_free();
-				
+				irc_free();				
+				break;
+			default:
+				printf("Hai sbagliato a selezionare il numero.");
 				break;
 				
 		}	
