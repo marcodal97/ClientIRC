@@ -1,11 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <ctype.h>
-//#include "def.h"
-
-
 
 /*PONG: di tanto in tanto il server pinga il client che deve rispondere con questo comando, altrimenti la connessione cade
 NICK: imposta il nickname univoco
@@ -20,8 +12,8 @@ WHOIS*/
 int connection_menu(){
 	int scelta;
 	
-	printf("\n\nBenvenuto nel miglior client IRC al mondo.\n\n");//scherzo
-	printf("\t\tConnection menu'\n");
+	printf("\n\n************ Benvenuto nel miglior client IRC al mondo ************\n\n");//scherzo
+	printf("\t\t------ Connection menu' ------\n");
 	printf("1-Modifica il file di configurazione (server, porta, nickname e username).\n");
 	printf("2-Connettiti al server.\n");
 	printf("Inserisci la tua scelta: ");
@@ -30,15 +22,15 @@ int connection_menu(){
 
 	return scelta;
 }
-tipo_coda coda;
+//tipo_coda coda;
 
 void mod_config(){
 	FILE * fp;
 	char nome_server[MAX_BUF];
-	char porta[5];
+	char porta[50];
 	char text[MAX_BUF];
 	char *token;
-	
+	tipo_coda coda;
 	
 	fp=fopen("configurazione.txt", "w");
 	if(fp==NULL){
@@ -81,13 +73,13 @@ void mod_config(){
 	
 	printf("File di configurazione modificato.\n");
 }
-tipo_coda coda;
 
 char irc_reg(){
 	FILE *fp;
 	char text[MAX_BUF], output[MAX_BUF];
 	char ch;
 	int flag;
+	tipo_coda coda;
 	
 	
 	fp=fopen("configurazione.txt", "r");
@@ -108,8 +100,11 @@ char irc_reg(){
 	
 	//printf("%s %s %s %s", coda.server, coda.porta, coda.nick, coda.user);
 	getchar();
-	printf("\n\nIl file di configurazione dice: \n\n%s", output);
-	printf("\nConfermare il file?(S=si, N=no)\n");
+	printf("\n\nIl file di configurazione dice: \n\n");
+	printf("---------------------\n");
+	printf("%s", output);
+	printf("\n---------------------\n");
+	printf("\n\nConfermare il file?(S=si, N=no)\n");
 	ch=getchar();
 	if(ch=='S'){		
 		coda.m_type=3;
@@ -124,7 +119,7 @@ char irc_reg(){
 	return ch;
 }
 
-void irc_nick(char *comando){  //COMPONE COMANDO NICK (comando è la stringa finale che viene mandata al client)
+void irc_nick(char *comando){  //Crea comando per cambiare nick
 	char str[MAX_BUF];	
 	strcpy(str, comando);
 	memset(comando, '\0', MAX_BUF);
@@ -158,43 +153,91 @@ void irc_part(char *comando){  //Crea comando per lasciare stanza
 	comando[strlen(comando)+1] = '\0';
 }
 
-void irc_msg(char *stanza, char *msg, char *comando){  //dato un messaggio e un canale/utente crea il comando per mandare il messaggi
-	
-	strcat(comando, stanza);
-	strcat(comando, " : ");
-	strcat(comando, msg);
-	comando[strlen(comando)]='\n';
-	comando[strlen(comando)+1]='\0';
-	strcpy(msg, comando);
-	/*strcpy(stanza, comando);
-	memset(comando, '\0', MAX_BUF);
-	strcpy(comando, "PRIVMSG ");
-	strcat(comando, stanza);
-	strcat(comando, " :");
-	strcat(comando, msg);
-	comando[strlen(comando)]='\n';
-	comando[strlen(comando)+1]='\0';
-	strcpy(msg, comando);*/
-	//memset(comando, '\0', MAX_BUF);
-	
+
+void irc_msg(char *comando, char *msg, char *nome){  //dato un messaggio e un canale/utente crea il comando per mandare il messaggio
+
+
+strcpy(comando, "PRIVMSG ");
+
+strcat(comando, nome);
+strcat(comando, " :");
+strcat(comando, msg);
+
+comando[strlen(comando)] = '\n';
+comando[strlen(comando)+1] = '\0';
+
 }
 
-void funzione_stanza(char *comando){
-	int scelta;
+void irc_whois(char *comando){
+
+char nome[MAX_BUF];
+
+strcpy(nome, comando);
+memset(comando, '\0', MAX_BUF);
+strcpy(comando, "WHOIS ");
+
+strcat(comando, nome);
+strcat(comando, "\n");
+
+comando[strlen(comando)] = '\0';
+
+}
+
+
+void funzione_stanza(char *nome){
+	
 	char messaggio[MAX_BUF];
+	tipo_coda coda;
+	printf("\n\n-----Sei entrato nella stanza \"%s\"------\n", nome);
+	printf("\n-----Per tornare al menu' precedente digitare \"i\".-----\n");
 	while(1){
-		
-		printf("Per tornare indietro scrivere \"i\".\n");
 		memset(coda.msg, '\0', MAX_BUF);
-		getchar();
-		//while(fgets(coda.msg,MAX_BUF-1,stdin)==NULL); 
+		memset(messaggio, '\0', MAX_BUF);
+		scanf(" %[^\n]", messaggio);
+		if(messaggio[0]!='i'){
+			irc_msg(coda.msg, messaggio, nome);
+			toclient(coda.msg);
+			}
+			else return;
+		
+	}
+
+}
+
+
+void funzione_chatnick(char *nome){
+	
+	char messaggio[MAX_BUF];
+	tipo_coda coda;
+	printf("\n\n----- Puoi chattare con \"%s\"------\n", nome);
+	printf("\n----- Per tornare al menu' precedente digitare \"i\".-----\n");
+	while(1){
+		memset(coda.msg, '\0', MAX_BUF);
+		memset(messaggio, '\0', MAX_BUF);
+		scanf(" %[^\n]", messaggio);
+		if(messaggio[0]!='i'){
+			irc_msg(coda.msg, messaggio, nome);
+			toclient(coda.msg);
+			}
+			else return;
+		
+	}
+
+}
+
+
+void irc_free(){  //funzione per la modalità libera
+	tipo_coda coda;
+	
+	printf("\n----- Per tornare al menu' precedente digitare \"i\"-----\n");
+	memset(coda.msg, '\0', MAX_BUF);
+	while(1){				
+		//while(fgets(coda.msg,MAX_BUF-1,stdin)==NULL);  //aspetto che si scriva qualcosa e lo mando al client
 		scanf(" %[^\n]", coda.msg);
 		if(coda.msg[0]!='i'){
-			coda.msg[strlen(coda.msg)]='\0';
 			coda.m_type = 3;
-			strcpy(messaggio, "PRIVMSG ");	
-			irc_msg(comando, coda.msg, messaggio);//coda.msg=ciao
-			printf("Messaggio finale: %s", coda.msg);	
+			coda.msg[strlen(coda.msg)] = '\n';
+			coda.msg[strlen(coda.msg)+1] = '\0';				
 			if(msgsnd(msg_id, &coda, sizeof(tipo_coda) - sizeof(long int), 0)< 0){
 				perror("Errore msgsnd\n");
 				exit(1);
@@ -203,37 +246,28 @@ void funzione_stanza(char *comando){
 				printf("Uscita...\n");
 				exit(0);
 			}
-		}else{
-			return;
-		}
+		}else {
+		printf("CIAO\n");
+		return;}
 	}
-	
-
-
-
 }
 
 
-void irc_free(){
-	char ch;
-	while(1){
-		
-		printf("Per tornare indietro scrivere \"i\".\n");		
-		while(fgets(coda.msg,MAX_BUF-1,stdin)==NULL);  //aspetto che si scriva qualcosa e lo mando al client
-		if(coda.msg[0]!='i'){
-			coda.m_type = 3;				
-			if(msgsnd(msg_id, &coda, sizeof(tipo_coda) - sizeof(long int), 0)< 0){
-				perror("Errore msgsnd\n");
-				exit(1);
-			}		
-			if(strcmp(coda.msg, "QUIT\n") == 0){
-				printf("Uscita...\n");
-				exit(0);
-			}
-		}else{
-			return;
-		}
+void QUIT(){
+
+tipo_coda coda;
+
+strcpy(coda.msg, "QUIT\n");
+coda.m_type = 3;
+
+	if(msgsnd(msg_id, &coda, sizeof(tipo_coda) - sizeof(long int), 0) < 0){
+		perror("Errore sendmsg\n");
+		exit(1);
 	}
+	
+	printf("\n\nChiusura Visualizzatore...\n");
+	exit(0);
+
 }
 
 
@@ -241,17 +275,16 @@ void irc_free(){
 int menu(){
 	int scelta;
 	
-	printf("\t\tMenu'\n");
+	printf("************Menu'************\n");
 	printf("1-Cambia il tuo nick.\n");
-	printf("2-Entra all'intero di una stanza.\n");
+	printf("2-Entra e scrivi all'interno di una stanza.\n");
 	printf("3-Lascia una stanza.\n");
 	printf("4-Setta o rimuovi un nuovo topic.\n");
-	printf("5-Invia un messaggio privato.\n");
-	printf("6-Invia un messaggio in un canale.\n");
-	printf("7-Cerca utente.\n");
-	printf("8-Informazioni su un utente.\n");
-	printf("9-Esci da IRC e dal client.\n");
-	printf("10-Inserisci da tastiera il comando.\n");
+	printf("5-Parla con un utente\n");
+	printf("6-Cerca utente.\n");
+	printf("7-Informazioni su un utente.\n");
+	printf("8-Esci da IRC e dal client.\n");
+	printf("9-Inserisci da tastiera i comandi.\n\n");
 	printf("Inserisci la tua scelta: ");
 	scanf("%d", &scelta);
 	
