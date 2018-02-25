@@ -11,12 +11,10 @@
 #include "Funzioni visualizer.h"
 
 
+
 //int msg_id;
 
 
-void *threadVW(void *arg);
-void *threadVR(void *arg);
-void login();
 
 int main(){
 	pthread_t threadW, threadR;
@@ -56,93 +54,104 @@ int main(){
 		perror("Errore connessione\n");
 		exit(EXIT_FAILURE);
 	}
-	printf("Connessione riuscita\n");
+	printf("Connessione riuscita\n\n\n");
 
 	//creo thread di scrittura in client e lettura da client
 	
-	pthread_create(&threadW, NULL, threadVW, NULL);
 	pthread_create(&threadR, NULL, threadVR, NULL);
+	pthread_create(&threadW, NULL, threadVW, NULL);
+	
 
 	pause();
 
 }
 
-void toclient(char *commando){
-	strcpy(coda.msg, commando);
-	printf("%s", coda.msg);
+void toclient(char *comando){
+
+	tipo_coda coda;
+	strcpy(coda.msg, comando);
+	coda.m_type = 3;
 	if(msgsnd(msg_id, &coda, sizeof(tipo_coda) - sizeof(long int), 0)< 0){
 			perror("Errore msgsnd\n");
 			exit(1);
-		}	
-		
-		
+		}			
 	if(strcmp(coda.msg, "QUIT\n") == 0){
 			printf("Uscita...\n");
 			exit(0);
 	}
+		
 }
+
 
 void *threadVW(void *arg){
 
 	int scelta;
 	tipo_coda coda;	
-	char stanza[MAX_BUF];
-	
+	char nome[MAX_BUF];
+
 	do{
+		do{
 		scelta=menu();
+		}while(scelta > 9);
+		
 		switch(scelta){
-			case 1:			
+			case 1:		
+				memset(coda.msg, '\0', MAX_BUF);
 				printf("Che nick vuoi utilizzare? ");
 				scanf("%s", coda.msg);
 				irc_nick(coda.msg);
 				toclient(coda.msg);
 				break;
 			case 2:
-				printf("Inserisci il nome della stanza: ");
+				memset(coda.msg, '\0', MAX_BUF);
+				memset(nome, '\0', MAX_BUF);
+				printf("Inserisci il nome della stanza in cui vuoi entrare: ");
 				scanf("%s", coda.msg);
-				strcpy(stanza, coda.msg);
+				strcpy(nome, coda.msg);
 				irc_join(coda.msg);	
 				toclient(coda.msg);			
-				funzione_stanza(stanza);
-				break;
+				funzione_stanza(nome);
+				break;				
 			case 3:
-				printf("Inserisci la stanza che vuoi lasciare: ");
+				memset(coda.msg, '\0', MAX_BUF);
+				memset(nome, '\0', MAX_BUF);
+				printf("Inserisci il nome della stanza che vuoi lasciare: ");
 				scanf("%s", coda.msg);
+				strcpy(nome, coda.msg);
 				irc_part(coda.msg);
 				toclient(coda.msg);
-			case 4:
+				printf("\n-----Hai lasciato la stanza \"%s\"-----\n", nome);
 				break;
 			case 5:
+				memset(coda.msg, '\0', MAX_BUF);
+				memset(nome, '\0', MAX_BUF);
+				printf("Inserisci il nickname: ");
+				scanf("%s", coda.msg);
+				strcpy(nome, coda.msg);
+				funzione_chatnick(nome);				
+				break;
+			case 7:
+				memset(coda.msg, '\0', MAX_BUF);
+				printf("Inserisci il nickname: ");
+				scanf("%s", coda.msg);								
+				printf("\n------ Per tornare al menu' principale premere un tasto qualsiasi ------\n");
+				printf("------ Informazioni su \"%s\" ------\n", coda.msg);
+				irc_whois(coda.msg);
+				toclient(coda.msg);
+				getchar();
+				getchar();
+				break;			
+			case 8:
+				QUIT();
+				break;
 				
-			case 10:
+			case 9:
 				irc_free();
+				
 				break;
 				
 		}	
-	}while(scelta!=9);
-
-	/*while(1){
-	
-			
-		while(fgets(coda.msg,MAX_BUF-1,stdin)==NULL);  //aspetto che si scriva qualcosa e lo mando al client
-		coda.m_type = 3;
-		
-		
-		
-				
-		if(msgsnd(msg_id, &coda, sizeof(tipo_coda) - sizeof(long int), 0)< 0){
-			perror("Errore msgsnd\n");
-			exit(1);
-		}	
-		
-		
-		if(strcmp(coda.msg, "QUIT\n") == 0){
-			printf("Uscita...\n");
-			exit(0);
-		}
-
-
-	}*/	
+	}while(1);
 
 }
 
@@ -168,7 +177,6 @@ tipo_coda coda;
 	}
 
 }
-
 
 
 
