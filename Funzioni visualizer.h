@@ -162,7 +162,7 @@ void irc_msg(char *comando, char *msg, char *nome){  //dato un messaggio e un ca
 
 void irc_whois(char *comando){
 
-char nome[MAX_BUF];
+	char nome[MAX_BUF];
 
 	strcpy(nome, comando);
 	memset(comando, '\0', MAX_BUF);
@@ -194,6 +194,29 @@ void funzione_stanza(char *nome){
 
 }
 
+void irc_who(char *nome){
+	char messaggio[MAX_BUF];
+	
+	strcpy(messaggio, "WHO ");
+	strcat(messaggio, nome);
+	memset(nome, '\0', MAX_BUF);
+	strcat(messaggio, "\n");
+	messaggio[strlen(messaggio)]='\0';
+	strcpy(nome, messaggio);
+}
+
+void irc_topic(char *stanza, char *msg){
+	char messaggio[MAX_BUF];
+	
+	strcpy(messaggio, "TOPIC ");
+	strcat(messaggio, stanza);
+	strcat(messaggio, " :");
+	strcat(messaggio, msg);
+	memset(msg, '\0', MAX_BUF);
+	strcat(messaggio, "\n");	
+	messaggio[strlen(messaggio)]='\0';
+	strcpy(msg, messaggio);
+}
 
 void funzione_chatnick(char *nome){
 	
@@ -209,8 +232,7 @@ void funzione_chatnick(char *nome){
 			irc_msg(coda.msg, messaggio, nome);
 			toclient(coda.msg);
 		}
-		else return;
-		
+		else return;		
 	}
 
 }
@@ -269,10 +291,11 @@ int menu(){
 	printf("3-Lascia una stanza.\n");
 	printf("4-Setta o rimuovi un nuovo topic.\n");
 	printf("5-Parla con un utente\n");
-	printf("6-Cerca utente.\n");
+	printf("6-Cerca utenti.\n");
 	printf("7-Informazioni su un utente.\n");
 	printf("8-Esci da IRC e dal client.\n");
-	printf("9-Inserisci da tastiera i comandi.\n\n");
+	printf("9-Inserisci da tastiera i comandi.\n");
+	printf("10-Esegui un comando in una stanza.\n");
 	printf("Inserisci la tua scelta: ");
 	scanf("%d", &scelta);
 	
