@@ -3,9 +3,9 @@
 int connection_menu(){
 	int scelta;
 	
-	printf("\n\n************ Benvenuto nel miglior client IRC al mondo ************\n\n");//scherzo
+	printf("\n\n************ Benvenuto nel client IRC ************\n\n");
 	printf("\t\t------ Connection menu' ------\n");
-	printf("1-Modifica il file di configurazione (server, porta, nickname e username).\n");
+	printf("1-Crea/modifica il file di configurazione (server, porta, nickname e username).\n");
 	printf("2-Connettiti al server.\n");
 	printf("Inserisci la tua scelta: ");
 	fflush(stdin);
