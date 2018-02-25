@@ -179,12 +179,12 @@ void funzione_stanza(char *nome){
 	char messaggio[MAX_BUF];
 	tipo_coda coda;
 	printf("\n\n-----Sei entrato nella stanza \"%s\"------\n", nome);
-	printf("\n-----Per tornare al menu' precedente digitare \"i\".-----\n");
+	printf("\n----- Per tornare al menu' precedente digitare \"/back\"-----\n");
 	while(1){
 		memset(coda.msg, '\0', MAX_BUF);
 		memset(messaggio, '\0', MAX_BUF);
 		scanf(" %[^\n]", messaggio);
-		if(messaggio[0]!='i'){
+		if(strcmp(messaggio, "/back")!= 0){
 			irc_msg(coda.msg, messaggio, nome);
 			toclient(coda.msg);
 		}
@@ -200,12 +200,12 @@ void funzione_chatnick(char *nome){
 	char messaggio[MAX_BUF];
 	tipo_coda coda;
 	printf("\n\n----- Puoi chattare con \"%s\"------\n", nome);
-	printf("\n----- Per tornare al menu' precedente digitare \"i\".-----\n");
+	printf("\n----- Per tornare al menu' precedente digitare \"/back\"-----\n");
 	while(1){
 		memset(coda.msg, '\0', MAX_BUF);
 		memset(messaggio, '\0', MAX_BUF);
 		scanf(" %[^\n]", messaggio);
-		if(messaggio[0]!='i'){
+		if(strcmp(messaggio, "/back")!= 0){
 			irc_msg(coda.msg, messaggio, nome);
 			toclient(coda.msg);
 		}
@@ -219,11 +219,12 @@ void funzione_chatnick(char *nome){
 void irc_free(){  //funzione per la modalità libera
 	tipo_coda coda;
 	
-	printf("\n----- Per tornare al menu' precedente digitare \"i\"-----\n");
-	memset(coda.msg, '\0', MAX_BUF);
-	while(1){				
+	printf("\n----- Per tornare al menu' precedente digitare \"/back\"-----\n");
+	
+	while(1){		
+		memset(coda.msg, '\0', MAX_BUF);		
 		scanf(" %[^\n]", coda.msg);
-		if(coda.msg[0]!='i'){
+		if(strcmp(coda.msg, "/back")!=0){
 			coda.m_type = 3;
 			coda.msg[strlen(coda.msg)] = '\n';
 			coda.msg[strlen(coda.msg)+1] = '\0';				
@@ -236,7 +237,7 @@ void irc_free(){  //funzione per la modalità libera
 				exit(0);
 			}
 		}else {
-		printf("CIAO\n");
+		
 		return;}
 	}
 }
